@@ -16,6 +16,9 @@ public class FCFS implements Runnable {
 	private ArrayList<Process> processes;
 	private ArrayList<Process> jobQueue;
 	private ArrayList<Process> readyQueue;
+	
+	private Process current;
+	
 	private Bankers bank;
 	
 	public FCFS(ArrayList<Process> processes, ArrayList<Resource> available) {
@@ -50,52 +53,26 @@ public class FCFS implements Runnable {
 		while(running) {
 //			System.out.println("size: " + readyQueue.size());
 			
-Iterator<Process> iterx = processes.iterator();
+			Iterator<Process> iterx = processes.iterator();
 			
 			while(iterx.hasNext()) {
 				Process p = iterx.next();
 				
 				if(p.getArrivalTime() == runningTime) {
-					System.out.println("Added p" + p.getPid() + " to job queue");
 					jobQueue.add(p);
 					iterx.remove();
 				}
 			}
 			
-			Iterator<Process> iter = jobQueue.iterator();
+			Iterator<Process> jobIiter = jobQueue.iterator();
 			
-			while(iter.hasNext()) {
-				Process p = iter.next();
+			while(jobIiter.hasNext()) {
+				Process p = jobIiter.next();
 				
-//				System.out.print("AVAILABLE: ");
-				for(Resource r : bank.getAvailable()) {
-					System.out.print(r.getValue() + " ");
-				}
-//				System.out.println();
-//				
-//				try {
-//					Thread.sleep(9);
-//				} catch (InterruptedException e1) {
-//					e1.printStackTrace();
-//				}
-					
 				if(bank.allocated(p)) {
 					readyQueue.add(p);
-					System.out.println("Added p" + p.getPid() + " to ready queue");
-					iter.remove();
+					jobIiter.remove();
 				}
-				else {
-					System.err.println("Stuck at p" + p.getPid());
-				}
-				
-//				try {
-//					Thread.sleep(9);
-//				} catch (InterruptedException e1) {
-//					e1.printStackTrace();
-//				}
-//				
-//				System.out.println("Time: " + runningTime);
-//				runningTime++;
 				
 				try {
 					Thread.sleep(1000);
@@ -104,24 +81,14 @@ Iterator<Process> iterx = processes.iterator();
 				}
 			}
 			
-//			try {
-//				Thread.sleep(9);
-//			} catch (InterruptedException e1) {
-//				e1.printStackTrace();
-//			}
+			Iterator<Process> readyIter = readyQueue.iterator();
 			
-//			System.out.println("Time: " + runningTime);
-//			runningTime++;
-			
-//			try {
-//				Thread.sleep(1000);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-			
-			if( !readyQueue.isEmpty() )	{
-				for( int i = 0; i <= readyQueue.get(0).burstTime(); i++) {
-					System.out.println(readyQueue.get(0).getPid()+":"+readyQueue.get(0).burstTime());
+			while( readyIter.hasNext() ) {
+				Process p = readyIter.next();
+				
+				for( int i = 0; i <= p.burstTime(); i++) {
+//					current.add("p" + p.getPid());
+					current = p;
 					
 					try {
 						Thread.sleep(1000);
@@ -130,20 +97,19 @@ Iterator<Process> iterx = processes.iterator();
 					}
 				}
 				
-//				System.out.println(readyQueue.get(0).getPid() + " is finished");
-//				System.out.println("Arrival Time: " + readyQueue.get(0).getArrivalTime());
-				readyQueue.remove(0);
-			}
-			
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				readyIter.remove();
+				
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 	
-	public void addProcess(Process p) {
-		readyQueue.add(p);
+	public Process getCurrent() {
+		return current;
 	}
+	
 }

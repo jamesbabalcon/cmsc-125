@@ -3,10 +3,10 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -15,8 +15,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import process.Process;
+import process.Resource;
+import processScheduling.FCFS;
+
 @SuppressWarnings("serial")
-public class GUI extends JPanel implements Runnable, ActionListener {
+public class GUI extends JPanel implements ActionListener {
 	
 	private JScrollPane scrollPane;
 	
@@ -24,7 +28,7 @@ public class GUI extends JPanel implements Runnable, ActionListener {
 	private JPanel inner;
 	private JPanel center;
 	private JPanel left;
-	private JPanel bottom;
+	private SimulationPanel bottom;
 	private JPanel[] setProc = new JPanel[6];
 	
 	private JCheckBox[] algos = new JCheckBox[7];
@@ -114,6 +118,7 @@ public class GUI extends JPanel implements Runnable, ActionListener {
 		
 		lower = new JPanel(new BorderLayout());
 		lower.add(start = new JButton("Start"), BorderLayout.SOUTH);
+		start.addActionListener(this);
 		
 		inner.add(lower, BorderLayout.SOUTH);
 		start.setEnabled(false);
@@ -122,8 +127,7 @@ public class GUI extends JPanel implements Runnable, ActionListener {
 		
 		///////////////////////////////////////
 		
-		bottom = new JPanel();
-		bottom.setPreferredSize(new Dimension(1200, 300));
+		bottom = new SimulationPanel();
 		
 		add(bottom, BorderLayout.SOUTH);
 	}
@@ -214,13 +218,28 @@ public class GUI extends JPanel implements Runnable, ActionListener {
 			
 			revalidate();
 		}
-	}
-	
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-	}
-
-	public void run() {
-		
+		else if(e.getSource() == start) {
+			ArrayList<Process> processes = new ArrayList<Process>();
+			ArrayList<Resource> allocation = new ArrayList<Resource>();
+			ArrayList<Resource> maxx = new ArrayList<Resource>();
+			ArrayList<Resource> avail = new ArrayList<Resource>();
+			
+			for(int x = 0; x < Integer.parseInt(procField.getText()); x++) {
+				for(int y = 0; y < Integer.parseInt(resField.getText()); y++) {
+					allocation.add(new Resource(Integer.parseInt(alloc[x][y].getText())));
+					maxx.add(new Resource(Integer.parseInt(max[x][y].getText())));
+				}
+				processes.add(new Process(x, Integer.parseInt(arrivalTime[x].getText()),0 , Integer.parseInt(burstTime[x].getText()), allocation, maxx));
+			}
+			
+			for(int x = 0; x < Integer.parseInt(resField.getText()); x++) {
+				avail.add(new Resource(Integer.parseInt(available[x].getText())));
+			}
+			
+			FCFS fcfs =  new FCFS(processes, avail);
+			bottom.setFcfs(fcfs);
+			fcfs.start();
+			bottom.start();
+		}
 	}
 }
