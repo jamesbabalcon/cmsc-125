@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import process.Process;
+import process.Resource;
 import processScheduling.FCFS;
 
 @SuppressWarnings("serial")
@@ -28,22 +30,25 @@ public class SimulationPanel extends JPanel implements Runnable {
 		cells = new ArrayList<Cell>();
 	}
 	
+	public void init(ArrayList<Process> processes, ArrayList<Resource> available) {
+		fcfs = new FCFS(processes, available);
+	}
+	
 	public synchronized void start() {
 		if( running )
 			return;
 		
-		System.out.println("hello");
 		running = true;
 		thread = new Thread(this);
+		fcfs.start();
 		thread.start();
 	}
-	
-	
 
 	public void run() {
 		while(running) {
 			
-			cells.add(new Cell(Integer.toString(count), Color.BLUE, 50 + count * cellWidth, 150));
+//			Integer.toString(fcfs.getCurrent().getPid());
+			cells.add(new Cell(Integer.toString(fcfs.getCurrent().getPid()), 50 + count * cellWidth, 150));
 			count++;
 			
 			repaint();
@@ -65,13 +70,5 @@ public class SimulationPanel extends JPanel implements Runnable {
 		for(Cell c : cells) {
 			c.paint(g2);
 		}
-	}
-
-	public FCFS getFcfs() {
-		return fcfs;
-	}
-
-	public void setFcfs(FCFS fcfs) {
-		this.fcfs = fcfs;
 	}
 }

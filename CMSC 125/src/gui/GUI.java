@@ -17,7 +17,6 @@ import javax.swing.JTextField;
 
 import process.Process;
 import process.Resource;
-import processScheduling.FCFS;
 
 @SuppressWarnings("serial")
 public class GUI extends JPanel implements ActionListener {
@@ -236,9 +235,7 @@ public class GUI extends JPanel implements ActionListener {
 				avail.add(new Resource(Integer.parseInt(available[x].getText())));
 			}
 			
-			FCFS fcfs =  new FCFS(processes, avail);
-			bottom.setFcfs(fcfs);
-			fcfs.start();
+			bottom.init(processes, avail);
 			bottom.start();
 		}
 	}

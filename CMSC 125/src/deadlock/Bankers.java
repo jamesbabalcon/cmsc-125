@@ -27,7 +27,7 @@ public class Bankers {
 	
 	public boolean isAvailable(ArrayList<Resource> need) {
 		
-		for(int x = 0; x < 3; x++) {
+		for(int x = 0; x < available.size(); x++) {
 			if(available.get(x).getValue() > need.get(x).getValue()) {
 				continue;
 			}
@@ -41,10 +41,4 @@ public class Bankers {
 	public ArrayList<Resource> getAvailable() {
 		return available;
 	}
-	
-//	public ArrayList<Resource> getNeed(ArrayList<Process> jobQueue) {
-//		ArrayList<Resource> need = new ArrayList<Resource>();
-//		
-//		return need;
-//	}
 }

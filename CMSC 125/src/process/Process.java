@@ -19,7 +19,7 @@ public class Process implements Comparable<Process> {
 		this.arrivalTime = arrivalTime;
 		this.burstTime = burstTime;
 		this.allocation = allocation;
-		this.max = max;
+		this.max = max; 
 		
 		need = new ArrayList<Resource>();
 	}
